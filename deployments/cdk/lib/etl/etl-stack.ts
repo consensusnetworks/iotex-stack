@@ -19,7 +19,7 @@ export class EtlStack extends Stack {
       databaseName: `${project}${service}Database${stage}`,
     });
 
-    const eventBucket = new s3.Bucket(this, `${project}${service}Bucket${stage}`);
+    const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`);
     
     new glue.Table(this, `${project}${service}EventTable${stage}`, {
       database: database,
@@ -61,10 +61,7 @@ export class EtlStack extends Stack {
     })
 
     processor.addEventSource(new S3EventSource(eventBucket, {
-      events: [s3.EventType.OBJECT_CREATED],
-      filters: [
-        { prefix: 'data/', }
-      ]
+      events: [s3.EventType.OBJECT_CREATED]
     }));
   }
 }

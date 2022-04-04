@@ -31,8 +31,6 @@ else
 
     # Set localstack environment variables
     export STAGE=local
-    export CDK_DEFAULT_ACCOUNT=000000000000
-    export CDK_DEFAULT_REGION=us-east-1
 
     # Start localstack
     docker-compose -f local/docker-compose.yml up -d
