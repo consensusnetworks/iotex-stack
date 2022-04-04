@@ -10,23 +10,23 @@ export class EtlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Todo rename variables and values and move to env
-
-    const client = "IotexEtl";
-    const stage = "Dev";
+    const stackName = Stack.of(this).stackName;
+    const project = process.env.PROJECT?.replace(/\b\w/g, c => c.toUpperCase());
+    const stage = process.env.STAGE?.replace(/\b\w/g, c => c.toUpperCase());
+    const service = "Etl";
 
     // Todo decide mapping of various resources to events (i.e., how many topics should we use?)
 
-    const topic = new sns.Topic(this, `${client}Topic${stage}`, {
-      topicName: `${client}Topic${stage}`,
+    const topic = new sns.Topic(this, `${project}${service}Topic${stage}`, {
+      topicName: `${project}${service}Topic${stage}`,
     });
 
-    const deadLetterQueue = new sqs.Queue(this, `${client}DeadLetterQueue${stage}`);
+    const deadLetterQueue = new sqs.Queue(this, `${project}${service}DeadLetterQueue${stage}`);
 
-    const topicLambda = new lambda.Function(this, `${client}TopicLambda${stage}`, {
+    const topicLambda = new lambda.Function(this, `${project}${service}SnsLambda${stage}`, {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('topic-lambda')
+      code: lambda.Code.fromAsset('../../services/sns-lambda')
     });
 
     topicLambda.addEventSource(new SnsEventSource(topic, {
@@ -34,15 +34,15 @@ export class EtlStack extends Stack {
       deadLetterQueue: deadLetterQueue,
     }));
 
-    const bucket = new s3.Bucket(this, `${client}Bucket${stage}`);
+    const bucket = new s3.Bucket(this, `${project}${service}Bucket${stage}`);
 
-    const bucketLambda = new lambda.Function(this, `${client}BucketLambda${stage}`, {
+    const processorLambda = new lambda.Function(this, `${project}${service}processorLambda${stage}`, {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('bucket-lambda')
+      code: lambda.Code.fromAsset('../../services/processor-lambda')
     })
 
-    bucketLambda.addEventSource(new S3EventSource(bucket, {
+    processorLambda.addEventSource(new S3EventSource(bucket, {
       events: [s3.EventType.OBJECT_CREATED],
       filters: [
         { prefix: 'data/', }

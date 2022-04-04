@@ -1,8 +1,8 @@
 {
-  "name": "etl",
+  "name": "iotex-stack-cdk",
   "version": "0.1.0",
   "bin": {
-    "etl": "bin/etl.js"
+    "index": "bin/index.js"
   },
   "scripts": {
     "build": "tsc",

@@ -1,0 +1,50 @@
+#!/bin/sh
+# Mock AWS resources and run tests in localstack
+#
+# Example:
+#
+#    cdk-mock -d ./path/to/cdk-directory
+#
+# Further information:
+# See https://localstack.cloud/
+#
+
+# Get args
+while getopts d: flag
+do
+    case "${flag}" in
+        d) DIRECTORY=${OPTARG};;
+    esac
+done
+
+# Get variables from root .env
+export $(xargs < .env)
+
+if [ -z "$(ls -A $DIRECTORY)" ]; then
+    echo "⚠️ CDK source directory is empty"
+else
+    echo "🚀 Deploying local CDK app"
+    cd $DIRECTORY
+
+    # Get variables from cdk .env
+    export $(xargs < .env)
+
+    # Set localstack environment variables
+    export STAGE=local
+    export CDK_DEFAULT_ACCOUNT=000000000000
+    export CDK_DEFAULT_REGION=us-east-1
+
+    # Start localstack
+    docker-compose -f local/docker-compose.yml up -d
+
+    # Deploy CDK app
+    npm install
+    npm run build
+    npm run cdklocal bootstrap -- --verbose --debug
+    npm run cdklocal synth -- --verbose --debug
+    npm run cdklocal diff -- --verbose --debug
+    npm run cdklocal deploy -- --all --require-approval never --verbose --debug
+
+    # Stop localstack
+    docker-compose -f $DIRECTORY/local/docker-compose.yml down -d
+fi
