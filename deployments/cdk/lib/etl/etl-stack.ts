@@ -20,14 +20,15 @@ export class EtlStack extends Stack {
     });
 
     const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`);
-    
+    const aggBucket = new s3.Bucket(this, `${project}${service}AggBucket${stage}`);  
+  
     new glue.Table(this, `${project}${service}EventTable${stage}`, {
       database: database,
       tableName: `${project}${service}EventTable${stage}`,
       bucket: eventBucket,
       columns: [
         {
-          name: "timestamp",
+          name: "type",
           type: glue.Schema.STRING
         },
         {
@@ -35,7 +36,7 @@ export class EtlStack extends Stack {
           type: glue.Schema.STRING
         },
         {
-          name: "event_type",
+          name: "staked_at",
           type: glue.Schema.STRING
         },
         {
@@ -44,6 +45,39 @@ export class EtlStack extends Stack {
         },
         {
           name: "staked_duration",
+          type: glue.Schema.STRING
+        },
+        {
+          name: "auto_stake",
+          type: glue.Schema.STRING
+        },
+      ],
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    new glue.Table(this, `${project}${service}AggTable${stage}`, {
+      database: database,
+      tableName: `${project}${service}AggTable${stage}`,
+      bucket: aggBucket,
+      columns: [
+        {
+          name: "type",
+          type: glue.Schema.STRING
+        },
+        {
+          name: "address",
+          type: glue.Schema.STRING
+        },
+        {
+          name: "first_staked_at",
+          type: glue.Schema.STRING
+        },
+        {
+          name: "total_staked_amount",
+          type: glue.Schema.STRING
+        },
+        {
+          name: "total_staked_duration",
           type: glue.Schema.STRING
         },
         {
