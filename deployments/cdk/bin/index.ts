@@ -8,5 +8,5 @@ const stage = process.env.STAGE?.replace(/\b\w/g, c => c.toUpperCase());
 
 const app = new cdk.App();
 new EtlStack(app, `${project}EtlStack${stage}`, {
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });

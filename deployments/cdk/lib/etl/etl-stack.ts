@@ -15,74 +15,94 @@ export class EtlStack extends Stack {
     const stage = process.env.STAGE?.replace(/\b\w/g, c => c.toUpperCase());
     const service = "Etl";
 
+    const databaseName = `${project}_${service}_Database_${stage}`
     const database = new glue.Database(this, `${project}${service}Database${stage}`, {
-      databaseName: `${project}${service}Database${stage}`,
+      databaseName: databaseName.toLowerCase(),
     });
 
     const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`);
     const aggBucket = new s3.Bucket(this, `${project}${service}AggBucket${stage}`);  
   
+    const eventTableName = `${project}_${service}_Event_Table_${stage}`
     new glue.Table(this, `${project}${service}EventTable${stage}`, {
       database: database,
-      tableName: `${project}${service}EventTable${stage}`,
+      tableName: eventTableName.toLowerCase(),
       bucket: eventBucket,
       columns: [
         {
           name: "type",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The type of event"
         },
         {
-          name: "address",
-          type: glue.Schema.STRING
+          name: "from_address",
+          type: glue.Schema.STRING,
+          comment: "The address that initiated the event"
         },
         {
-          name: "staked_at",
-          type: glue.Schema.STRING
+          name: "to_address",
+          type: glue.Schema.STRING,
+          comment: "The address that received the event"
+        },
+        {
+          name: "datestring",
+          type: glue.Schema.STRING,
+          comment: "The datestring (MM-DD-YYYY) of the event"
         },
         {
           name: "staked_amount",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The amount staked or unstaked in the stake action event"
         },
         {
           name: "staked_duration",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The duration of the stake action event"
         },
         {
           name: "auto_stake",
-          type: glue.Schema.STRING
+          type: glue.Schema.BOOLEAN,
+          comment: "The compounding selection of the stake action event"
         },
       ],
       dataFormat: glue.DataFormat.JSON,
     });
 
+    const aggTableName = `${project}_${service}_Agg_Table_${stage}`
     new glue.Table(this, `${project}${service}AggTable${stage}`, {
       database: database,
-      tableName: `${project}${service}AggTable${stage}`,
+      tableName: aggTableName.toLowerCase(),
       bucket: aggBucket,
       columns: [
         {
           name: "type",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The type of aggregate (e.g. wallet, contract, etc.)"
         },
         {
           name: "address",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The address of the aggregate"
         },
         {
           name: "first_staked_at",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The first datestring (MM-DD-YYYY) that a wallet staked"
         },
         {
           name: "total_staked_amount",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The total amount that a wallet has staked"
         },
         {
           name: "total_staked_duration",
-          type: glue.Schema.STRING
+          type: glue.Schema.STRING,
+          comment: "The total duration that a wallet has staked"
         },
         {
-          name: "auto_stake",
-          type: glue.Schema.STRING
+          name: "is_auto_stake",
+          type: glue.Schema.STRING,
+          comment: "The most recent stake reward compounding selection of a wallet"
         },
       ],
       dataFormat: glue.DataFormat.JSON,

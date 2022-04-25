@@ -29,7 +29,7 @@ else
     # Get variables from cdk .env
     export $(xargs < .env)
 
-    # Set localstack environment variables
+    # Set localstack env
     export STAGE=local
 
     # Start localstack
@@ -44,5 +44,5 @@ else
     npm run cdklocal deploy -- --all --require-approval never --verbose --debug
 
     # Stop localstack
-    docker-compose -f $DIRECTORY/local/docker-compose.yml down -d
+    # docker-compose -f $DIRECTORY/local/docker-compose.yml down -d
 fi
