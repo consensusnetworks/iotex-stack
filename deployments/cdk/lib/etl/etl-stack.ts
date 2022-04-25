@@ -17,7 +17,7 @@ export class EtlStack extends Stack {
 
     const databaseName = `${project}_${service}_Database_${stage}`
     const database = new glue.Database(this, `${project}${service}Database${stage}`, {
-      databaseName: databaseName.toLowerCase(),
+      databaseName: databaseName.toLowerCase()
     });
 
     const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`);
@@ -35,19 +35,19 @@ export class EtlStack extends Stack {
           comment: "The type of event"
         },
         {
-          name: "from_address",
+          name: "datestring",
+          type: glue.Schema.STRING,
+          comment: "The datestring (MM-DD-YYYY) of the event"
+        },
+        {
+          name: "address",
           type: glue.Schema.STRING,
           comment: "The address that initiated the event"
         },
         {
-          name: "to_address",
+          name: "staked_candidate",
           type: glue.Schema.STRING,
-          comment: "The address that received the event"
-        },
-        {
-          name: "datestring",
-          type: glue.Schema.STRING,
-          comment: "The datestring (MM-DD-YYYY) of the event"
+          comment: "The name of the candidate that received the stake action event"
         },
         {
           name: "staked_amount",
@@ -100,7 +100,7 @@ export class EtlStack extends Stack {
           comment: "The total duration that a wallet has staked"
         },
         {
-          name: "is_auto_stake",
+          name: "auto_staking",
           type: glue.Schema.STRING,
           comment: "The most recent stake reward compounding selection of a wallet"
         },
