@@ -19,4 +19,4 @@ jobs:
           npm install
           npm run build
           npm run test
-        working-directory: deployments/cdk
+        working-directory: infrastructure/cdk

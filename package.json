@@ -1,13 +1,20 @@
 {
   "name": "iotex-stack",
   "version": "0.0.0",
+  "workspaces": [
+    "infrastructure/cdk"
+  ],
   "scripts": {
-    "mock": "scripts/cdk/cdk-mock -d deployments/cdk",
-    "deploy": "scripts/cdk/cdk-deploy -d deployments/cdk",
-    "destroy": "scripts/cdk/cdk-destroy -d deployments/cdk",
-    "test:push": "scripts/actions/actions-test -w push",
-    "test:release": "scripts/actions/actions-test -w release",
-    "test:delete": "scripts/actions/actions-test -w delete",
+    "configure": "make aws-configure",
+    "predev": "npm run configure",
+    "premock": "npm run configure",
+    "mock": "make cdk-mock",
+    "deploy": "make cdk-deploy",
+    "destroy": "make cdk-destroy",
+    "test:push": "make actions-push",
+    "test:release": "make actions-release",
+    "test:delete": "make actions-delete",
+    "test:cdk": "npm run test --workspace=infrastructure/cdk",
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "release-it"
   },
