@@ -19,6 +19,7 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@types/jest": "^27.4.1",
     "release-it": "^14.13.1"
   },
   "release-it": {

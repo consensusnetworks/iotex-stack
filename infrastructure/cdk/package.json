@@ -5,6 +5,7 @@
     "index": "bin/index.js"
   },
   "scripts": {
+    "pretest": "export PROJECT=iotex && export STAGE=test && npm run build",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",

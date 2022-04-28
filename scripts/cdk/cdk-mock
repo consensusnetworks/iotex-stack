@@ -31,6 +31,7 @@ else
 
     # Set localstack env
     export STAGE=local
+    export AWS_REGION=us-east-2
 
     # Start localstack
     docker-compose -f local/docker-compose.yml up -d
