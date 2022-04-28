@@ -31,6 +31,16 @@ type GetInfoService interface {
 	GetStakingBuckets(ctx context.Context, height uint64) (*iotextypes.VoteBucketList, error)
 	// GetStakingCandidates is the GetStakingCandidates interface
 	GetStakingCandidates(ctx context.Context, height uint64) (*iotextypes.CandidateListV2, error)
+
+	GetAccount(ctx context.Context, in *iotexapi.GetAccountRequest) (*iotexapi.GetAccountResponse, error)
+}
+
+func (s *getInfoService) GetAccount(ctx context.Context, in *iotexapi.GetAccountRequest) (*iotexapi.GetAccountResponse, error) {
+	err := s.Connect()
+	if err != nil {
+		return nil, err
+	}
+	return s.ReadOnlyClient().API().GetAccount(ctx, in)
 }
 
 type getInfoService struct {

@@ -1,49 +1,49 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
+	"os"
+)
 
-	"github.com/iotexproject/iotex-proto/golang/iotexapi"
+const (
+	Mainnet = "mainnet"
+	Testnet = "testnet"
 )
 
 func main() {
-	s := NewGetInfoService("", "api.testnet.iotex.one:443", true)
+	crawler := NewCrawler(Mainnet)
 
-	r, err := s.GetChainMeta(context.Background(), &iotexapi.GetChainMetaRequest{})
-	out, _ := json.MarshalIndent(r, "", "\t")
-	fmt.Println("chain meta", string(out), err)
+	chainMeta, err := crawler.GetChainMetadata()
 
-	blockMetasRequest := &iotexapi.GetBlockMetasRequest{
-		Lookup: &iotexapi.GetBlockMetasRequest_ByIndex{
-			ByIndex: &iotexapi.GetBlockMetasByIndexRequest{
-				Start: 10000,
-				Count: 1,
-			},
-		},
+	crawler.Save(chainMeta, "chain_meta.json")
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	BlockMetasResponse, err := s.GetBlockMetas(context.Background(), blockMetasRequest)
-	out, _ = json.MarshalIndent(BlockMetasResponse, "", "\t")
-	fmt.Println("block metas", string(out), err)
 
-	getActionsRequest := &iotexapi.GetActionsRequest{
-		Lookup: &iotexapi.GetActionsRequest_ByIndex{
-			ByIndex: &iotexapi.GetActionsByIndexRequest{
-				Start: 1000000,
-				Count: 1,
-			},
-		},
+	blocksMeta, err := crawler.GetBlocksMetadata(1, 500)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	getActionsResponse, err := s.GetActions(context.Background(), getActionsRequest)
-	out, _ = json.MarshalIndent(getActionsResponse, "", "\t")
-	fmt.Println("action", string(out), err)
 
-	getCandidatesResponse, err := s.GetStakingCandidates(context.Background(), 7060000)
-	out, _ = json.MarshalIndent(getCandidatesResponse, "", "\t")
-	fmt.Println("candidates", string(out), err)
+	crawler.Save(blocksMeta, "blocks.json")
 
-	getBucketsResponse, err := s.GetStakingBuckets(context.Background(), 7060000)
-	out, _ = json.MarshalIndent(getBucketsResponse, "", "\t")
-	fmt.Println("buckets", string(out), err)
+	actions, err := crawler.GetActions(1, 500)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	crawler.Save(actions, "actions.json")
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println("done")
 }
