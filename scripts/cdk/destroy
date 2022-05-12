@@ -3,7 +3,7 @@
 #
 # Example:
 #
-#    cdk-destroy -d ./path/to/cdk-directory
+#    scripts/cdk/destroy -d ./path/to/cdk-directory
 #
 # Further information:
 # See https://github.com/nektos/act

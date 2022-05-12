@@ -3,7 +3,7 @@
 #
 # Example:
 #
-#    aws-configure -p profile-to-use
+#    scripts/aws/configure -p profile-to-use
 #
 # Further information:
 # See https://docs.aws.amazon.com/

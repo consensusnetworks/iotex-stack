@@ -1,23 +1,20 @@
 aws-configure:
-	scripts/aws/aws-configure
+	scripts/aws/configure
 
 cdk-mock:
-	scripts/cdk/cdk-mock -d infrastructure/cdk
+	scripts/cdk/mock -d infrastructure/cdk
 
 cdk-deploy:
-	scripts/cdk/cdk-deploy -d infrastructure/cdk
+	scripts/cdk/deploy -d infrastructure/cdk
 
 cdk-destroy:
-	scripts/cdk/cdk-destroy -d infrastructure/cdk
-
-pinpoint-deploy:
-	scripts/pinpoint/pinpoint-template -d scripts/pinpoint/templates
+	scripts/cdk/destroy -d infrastructure/cdk
 
 actions-push:
-	scripts/actions/actions-test -w push
+	scripts/actions/test -w push
 
 actions-release:
-	scripts/actions/actions-test -w release
+	scripts/actions/test -w release
 
 actions-delete:
-	scripts/actions/actions-test -w delete
+	scripts/actions/test -w delete

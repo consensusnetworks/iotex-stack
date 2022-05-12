@@ -3,7 +3,7 @@
 #
 # Example:
 #
-#    cdk-deploy -d ./path/to/cdk-directory
+#    scripts/cdk/deploy -d ./path/to/cdk-directory
 #
 # Further information:
 # See https://docs.aws.amazon.com/cdk/api/v2/docs/aws-construct-library.html
