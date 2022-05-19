@@ -2,7 +2,6 @@ name: Deploy staging and dev stages on push
 on:
   push:
     branches:
-      - master
       - develop
 
 env:
