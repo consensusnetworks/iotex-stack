@@ -1,2 +1,6 @@
 .DS_Store
+.env
+.secrets
+node_modules
+*.log
 crawler/output/

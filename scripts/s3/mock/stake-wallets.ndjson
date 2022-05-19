@@ -1,0 +1,2 @@
+{ "type": "stake_wallet", "address": "io1gkjlv74zg9k98mhhe659a0rmhn7xyt6ua52p52", "first_staked_at": "2017-04-01T20:20:00.000Z", "total_staked_amount": "769000000000000000000", "total_staked_duration": 2100, "auto_staking": true }
+{ "type": "stake_wallet", "address": "io3902kdieijfijsleijlijflie933490jklfelie", "first_staked_at": "2019-04-05T20:20:00.000Z", "total_staked_amount": "950000000000000000000", "total_staked_duration": 1050, "auto_staking": false }

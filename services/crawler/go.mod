@@ -1,4 +1,4 @@
-module github.com/consensusnetworks/iotex-stack/crawler
+module github.com/consensusnetworks/iotex-stack/services/crawler
 
 go 1.18
 
