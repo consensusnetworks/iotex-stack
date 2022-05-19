@@ -36,7 +36,7 @@ export class EtlStack extends Stack {
         },
         {
           name: "datestring",
-          type: glue.Schema.STRING,
+          type: glue.Schema.TIMESTAMP,
           comment: "The datestring (MM-DD-YYYY) of the event"
         },
         {
@@ -51,12 +51,12 @@ export class EtlStack extends Stack {
         },
         {
           name: "staked_amount",
-          type: glue.Schema.STRING,
+          type: glue.Schema.BIG_INT,
           comment: "The amount staked or unstaked in the stake action event"
         },
         {
           name: "staked_duration",
-          type: glue.Schema.STRING,
+          type: glue.Schema.INTEGER,
           comment: "The duration of the stake action event"
         },
         {
@@ -86,22 +86,22 @@ export class EtlStack extends Stack {
         },
         {
           name: "first_staked_at",
-          type: glue.Schema.STRING,
+          type: glue.Schema.TIMESTAMP,
           comment: "The first datestring (MM-DD-YYYY) that a wallet staked"
         },
         {
           name: "total_staked_amount",
-          type: glue.Schema.STRING,
+          type: glue.Schema.BIG_INT,
           comment: "The total amount that a wallet has staked"
         },
         {
           name: "total_staked_duration",
-          type: glue.Schema.STRING,
+          type: glue.Schema.INTEGER,
           comment: "The total duration that a wallet has staked"
         },
         {
           name: "auto_staking",
-          type: glue.Schema.STRING,
+          type: glue.Schema.BOOLEAN,
           comment: "The most recent stake reward compounding selection of a wallet"
         },
       ],
