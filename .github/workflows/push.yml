@@ -1,0 +1,132 @@
+name: Deploy staging and dev stages on push
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  PROJECT: iotex
+  AWS_REGION: us-east-2
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    # Skip any pushes with commit flag '(skip deploy)'
+    # Comment out for testing
+    if: ${{ !contains(github.event.head_commit.message, '(skip deploy)') }}
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Get the branch name
+        run: |
+          echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
+      - name: Set the stage for trunk branches
+        if: ${{ contains(github.ref, 'master') || contains(github.ref, 'develop') }}
+        run: |
+          echo "STAGE=${{ fromJson('{ "master": "staging", "develop": "dev" }')[env.BRANCH] }}" >> $GITHUB_ENV
+
+      - name: Set the stage for testing
+        if: ${{ github.actor == 'nektos/act' }}
+        run: |
+          echo "STAGE=dev" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build and deploy stacks
+        run: npm run deploy
+
+      # Todo grab either glue console link or internal dash
+      # - name: Set deployment outputs
+      #   run: |
+      #     export "STACK_KEY=${PROJECT^}${SERVICE^}Stack${STAGE^}"
+      #     export "DNS_KEY=${PROJECT^}${SERVICE^}DnsName${STAGE^}"
+      #     export "ARN_KEY=${PROJECT^}${SERVICE^}StackId${STAGE^}"
+      #     echo "WEBSITE_DNS=$(cat cdk-outputs.json | jq -r --arg stack_key "$STACK_KEY" --arg dns_key "$DNS_KEY" '.[$stack_key][$dns_key]')" >> $GITHUB_ENV
+      #     echo "WEBSITE_ARN=$(cat cdk-outputs.json | jq -r --arg stack_key "$STACK_KEY" --arg arn_key "$ARN_KEY" '.[$stack_key][$arn_key]')" >> $GITHUB_ENV
+      #   env:
+      #     SERVICE: website
+
+      - name: Select success emoji
+        if: ${{ success() }}
+        run: echo 'EMOJI=:rocket:' >> $GITHUB_ENV
+
+      - name: Select failure emoji
+        if: ${{ failure() }}
+        run: echo 'EMOJI=:see_no_evil:' >> $GITHUB_ENV
+
+      - name: Notify slack
+        if: ${{ success() || failure() }}
+        uses: slackapi/slack-github-action@v1.18.0
+        # Todo link to glue console or internal dash
+        # {
+        #   "type": "button",
+        #   "text": {
+        #     "type": "plain_text",
+        #     "text": "Preview",
+        #     "emoji": true
+        #   },
+        #   "style": "primary",
+        #   "value": "preview",
+        #   "url": "https://${{ env.WEBSITE_DNS }}"
+        # }
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":construction: Development Deployment → :dog2: NewFi"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch* · <https://github.com/${{ github.repository }}/tree/${{ env.BRANCH }}|${{ env.BRANCH }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Environment* · <https://${{ env.AWS_REGION }}.console.aws.amazon.com/cloudformation/home?region=${{ env.AWS_REGION }}#/stacks/stackinfo?stackId=${{ env.WEBSITE_ARN }}|${{ env.STAGE }}>"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Deployment completed with _${{ job.status }}_ ${{ env.EMOJI }}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Inspect Logs",
+                        "emoji": true
+                      },
+                      "value": "inspect_logs",
+                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

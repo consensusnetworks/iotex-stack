@@ -1,4 +1,4 @@
-module github.com/consensusnetworks/iotex-stack/crawler
+module github.com/consensusnetworks/iotex-stack/services/crawler
 
 go 1.18
 
@@ -8,3 +8,5 @@ require (
 	github.com/iotexproject/iotex-proto v0.5.9
 	github.com/pkg/errors v0.9.1
 )
+
+require github.com/gogo/protobuf v1.3.2 // indirect

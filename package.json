@@ -1,0 +1,43 @@
+{
+  "name": "iotex-stack",
+  "version": "0.0.0",
+  "workspaces": [
+    "infrastructure/cdk"
+  ],
+  "scripts": {
+    "configure": "make aws-configure",
+    "predev": "npm run configure",
+    "premock": "npm run configure",
+    "mock": "make cdk-mock",
+    "deploy": "make cdk-deploy",
+    "destroy": "make cdk-destroy",
+    "test:push": "make actions-push",
+    "test:release": "make actions-release",
+    "test:delete": "make actions-delete",
+    "test:cdk": "npm run test --workspace=infrastructure/cdk",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "release-it": "^14.13.1"
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "github": {
+      "release": true
+    },
+    "git": {
+      "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs",
+      "commitMessage": "Release v${version} (skip deploy)"
+    },
+    "hooks": {
+      "after:bump": "npx auto-changelog -p"
+    }
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.93"
+  }
+}
