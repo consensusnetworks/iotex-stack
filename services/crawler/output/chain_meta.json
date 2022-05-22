@@ -1,14 +1,14 @@
 {
   "chainMeta": {
-    "height": 16744387,
-    "numActions": 37111347,
-    "tps": 1,
+    "height": 17484606,
+    "numActions": 40527585,
+    "tps": 2,
     "epoch": {
-      "num": 25779,
-      "height": 16743961
+      "num": 26807,
+      "height": 17484121
     },
-    "tpsFloat": 0.8727273,
+    "tpsFloat": 1.3636364,
     "chainID": 1
   },
-  "syncStage": "synced to blockchain tip"
+  "syncStage": "sync in progress at 0.3 blocks/sec"
 }
