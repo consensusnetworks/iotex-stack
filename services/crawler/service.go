@@ -33,6 +33,8 @@ type GetInfoService interface {
 	GetStakingCandidates(ctx context.Context, height uint64) (*iotextypes.CandidateListV2, error)
 
 	GetAccount(ctx context.Context, in *iotexapi.GetAccountRequest) (*iotexapi.GetAccountResponse, error)
+
+	GetTransactionLogByActionHash(ctx context.Context, in *iotexapi.GetTransactionLogByActionHashRequest) (*iotexapi.GetTransactionLogByActionHashResponse, error)
 }
 
 func (s *getInfoService) GetAccount(ctx context.Context, in *iotexapi.GetAccountRequest) (*iotexapi.GetAccountResponse, error) {
@@ -101,6 +103,14 @@ func (s *getInfoService) GetStakingBuckets(ctx context.Context, height uint64) (
 		}
 	}
 	return
+}
+
+func (s *getInfoService) GetTransactionLogByActionHash(ctx context.Context, in *iotexapi.GetTransactionLogByActionHashRequest) (*iotexapi.GetTransactionLogByActionHashResponse, error) {
+	err := s.Connect()
+	if err != nil {
+		return nil, err
+	}
+	return s.ReadOnlyClient().API().GetTransactionLogByActionHash(ctx, in)
 }
 
 // GetStakingCandidates is the GetStakingCandidates interface

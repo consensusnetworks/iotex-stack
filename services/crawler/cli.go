@@ -14,73 +14,69 @@ const (
 )
 
 func main() {
-	cli := &cli.App{
-		Name: "crawl",
+
+	var net string
+	var from int
+	var to int
+
+	app := &cli.App{
+		Name: "crawler",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "net",
-				Value: "testnet",
-				Usage: "network to crawl",
+				Name:        "net",
+				Value:       Testnet,
+				Usage:       "network to crawl",
+				Destination: &net,
 			},
 			&cli.IntFlag{
-				Name:  "from",
-				Value: 1,
-				Usage: "start block number",
+				Name:        "from",
+				Value:       1,
+				Usage:       "start block number",
+				Destination: &from,
 			},
 			&cli.IntFlag{
-				Name:  "to",
-				Value: 100,
-				Usage: "end block number",
+				Name:        "to",
+				Value:       2,
+				Usage:       "end block number",
+				Destination: &to,
 			},
 		},
 		Commands: []cli.Command{
 			{
-				Name:    "blocks",
-				Aliases: []string{"b"},
-				Usage:   "crawl blocks",
+				Name:  "actions",
+				Usage: "get actions",
 				Action: func(c *cli.Context) error {
-
-					crawler := NewCrawler("testnet")
-
-					from := c.Int("from")
-
-					if from < 1 {
-						log.Fatal("from must be greater than 0")
-						os.Exit(1)
-					}
-
-					to := c.Int("to")
 
 					if to < from {
 						log.Fatal("to must be greater than from")
 						os.Exit(1)
 					}
 
-					blocksMeta, err := crawler.GetBlocksMetadata(from, to)
+					crawler := NewCrawler(net)
+
+					fmt.Println("crawling actions from ", from, " to ", to)
+
+					actionsResponse, err := crawler.GetActions(from, to)
 
 					if err != nil {
 						log.Fatal(err)
 						os.Exit(1)
 					}
 
-					crawler.Save(blocksMeta, "blocks.json")
-					fmt.Println("crawl blocks")
-					return nil
-				},
-			},
-			{
-				Name:    "actions",
-				Aliases: []string{"a"},
-				Usage:   "crawl actions",
-				Action: func(c *cli.Context) error {
-					fmt.Println("crawl actions")
+					crawler.Save(actionsResponse, "actions.json")
+
+					if err != nil {
+						log.Fatal(err)
+						os.Exit(1)
+					}
+
 					return nil
 				},
 			},
 		},
 	}
 
-	err := cli.Run(os.Args)
+	err := app.Run(os.Args)
 
 	if err != nil {
 		log.Fatal(err)

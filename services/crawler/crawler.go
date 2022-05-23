@@ -24,16 +24,6 @@ func init() {
 	}
 }
 
-type CreateStake struct {
-	Type           string `json:"type"`
-	Hash           string `json:"hash"`
-	Address        string `json:"address"`
-	StakedAt       string `json:"staked_at"`
-	StakedAmount   string `json:"staked_amount"`
-	StakedDuration int64  `json:"staked_duration"`
-	AutoStake      bool   `json:"auto_stake"`
-}
-
 type Crawler struct {
 	CreatedAt time.Time      `json:"created_at"`
 	Net       string         `json:"net"`
@@ -129,21 +119,4 @@ func (c *Crawler) GetActions(start, count int) (*iotexapi.GetActionsResponse, er
 	}
 
 	return getActionsResponse, err
-}
-
-func (c *Crawler) GetActionByHash(hash string) (*iotexapi.GetActionsResponse, error) {
-	getActionRequest := &iotexapi.GetActionsRequest{
-		Lookup: &iotexapi.GetActionsRequest_ByHash{
-			ByHash: &iotexapi.GetActionByHashRequest{
-				ActionHash: hash,
-			},
-		},
-	}
-	getActionResponse, err := c.Service.GetActions(context.Background(), getActionRequest)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return getActionResponse, err
 }
