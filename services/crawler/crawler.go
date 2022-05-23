@@ -24,20 +24,10 @@ func init() {
 	}
 }
 
-type CreateStake struct {
-	Type           string `json:"type"`
-	Hash           string `json:"hash"`
-	Address        string `json:"address"`
-	StakedAt       string `json:"staked_at"`
-	StakedAmount   string `json:"staked_amount"`
-	StakedDuration int64  `json:"staked_duration"`
-	AutoStake      bool   `json:"auto_stake"`
-}
-
 type Crawler struct {
 	CreatedAt time.Time      `json:"created_at"`
 	Net       string         `json:"net"`
-	Service   GetInfoService `json:"-"`
+	Service   GetInfoService `jsion:"-"`
 }
 
 func NewCrawler(net string) *Crawler {
@@ -63,7 +53,7 @@ func (c *Crawler) GetChainMetadata() (*iotexapi.GetChainMetaResponse, error) {
 	return meta, nil
 }
 
-func (c *Crawler) GetBlocksMetadata(start, count uint64) (*iotexapi.GetBlockMetasResponse, error) {
+func (c *Crawler) GetBlocksMetadata(start, count int) (*iotexapi.GetBlockMetasResponse, error) {
 
 	if start == 0 {
 		start = 1
@@ -76,8 +66,8 @@ func (c *Crawler) GetBlocksMetadata(start, count uint64) (*iotexapi.GetBlockMeta
 	blockMetasRequest := &iotexapi.GetBlockMetasRequest{
 		Lookup: &iotexapi.GetBlockMetasRequest_ByIndex{
 			ByIndex: &iotexapi.GetBlockMetasByIndexRequest{
-				Start: start,
-				Count: count,
+				Start: uint64(start),
+				Count: uint64(count),
 			},
 		},
 	}
@@ -104,7 +94,7 @@ func (c *Crawler) Save(data interface{}, file string) error {
 	return nil
 }
 
-func (c *Crawler) GetActions(start, count uint64) (*iotexapi.GetActionsResponse, error) {
+func (c *Crawler) GetActions(start, count int) (*iotexapi.GetActionsResponse, error) {
 
 	if start == 0 {
 		start = 1
@@ -117,8 +107,8 @@ func (c *Crawler) GetActions(start, count uint64) (*iotexapi.GetActionsResponse,
 	getActionsRequest := &iotexapi.GetActionsRequest{
 		Lookup: &iotexapi.GetActionsRequest_ByIndex{
 			ByIndex: &iotexapi.GetActionsByIndexRequest{
-				Start: start,
-				Count: count,
+				Start: uint64(start),
+				Count: uint64(count),
 			},
 		},
 	}
@@ -129,21 +119,4 @@ func (c *Crawler) GetActions(start, count uint64) (*iotexapi.GetActionsResponse,
 	}
 
 	return getActionsResponse, err
-}
-
-func (c *Crawler) GetActionByHash(hash string) (*iotexapi.GetActionsResponse, error) {
-	getActionRequest := &iotexapi.GetActionsRequest{
-		Lookup: &iotexapi.GetActionsRequest_ByHash{
-			ByHash: &iotexapi.GetActionByHashRequest{
-				ActionHash: hash,
-			},
-		},
-	}
-	getActionResponse, err := c.Service.GetActions(context.Background(), getActionRequest)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return getActionResponse, err
 }
