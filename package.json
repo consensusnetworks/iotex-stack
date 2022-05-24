@@ -5,6 +5,7 @@
     "infrastructure/cdk"
   ],
   "scripts": {
+    "lint": "eslint --fix --ext .ts ./",
     "configure": "make aws-configure",
     "predev": "npm run configure",
     "premock": "npm run configure",
@@ -20,7 +21,20 @@
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^12.4.2",
     "release-it": "^14.13.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts}": "npm run lint"
   },
   "release-it": {
     "npm": {

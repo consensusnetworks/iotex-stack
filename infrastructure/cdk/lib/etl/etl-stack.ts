@@ -1,27 +1,27 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Stack, StackProps } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as s3 from 'aws-cdk-lib/aws-s3'
 // import * as glue from 'aws-cdk-lib/aws-glue';
-import * as glue from '@aws-cdk/aws-glue-alpha';
-import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as glue from '@aws-cdk/aws-glue-alpha'
+import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 
 export class EtlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+    super(scope, id, props)
 
     // const stackName = Stack.of(this).stackName;
-    const project = process.env.PROJECT?.replace(/\b\w/g, c => c.toUpperCase());
-    const stage = process.env.STAGE?.replace(/\b\w/g, c => c.toUpperCase());
-    const service = "Etl";
+    const project = process.env.PROJECT?.replace(/\b\w/g, c => c.toUpperCase())
+    const stage = process.env.STAGE?.replace(/\b\w/g, c => c.toUpperCase())
+    const service = "Etl"
 
     const databaseName = `${project}_${service}_Database_${stage}`
     const database = new glue.Database(this, `${project}${service}Database${stage}`, {
       databaseName: databaseName.toLowerCase()
-    });
+    })
 
-    const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`);
-    const aggBucket = new s3.Bucket(this, `${project}${service}AggBucket${stage}`);  
+    const eventBucket = new s3.Bucket(this, `${project}${service}EventBucket${stage}`)
+    const aggBucket = new s3.Bucket(this, `${project}${service}AggBucket${stage}`)  
   
     const eventTableName = `${project}_${service}_Event_Table_${stage}`
     new glue.Table(this, `${project}${service}EventTable${stage}`, {
@@ -66,7 +66,7 @@ export class EtlStack extends Stack {
         },
       ],
       dataFormat: glue.DataFormat.JSON,
-    });
+    })
 
     const aggTableName = `${project}_${service}_Agg_Table_${stage}`
     new glue.Table(this, `${project}${service}AggTable${stage}`, {
@@ -106,7 +106,7 @@ export class EtlStack extends Stack {
         },
       ],
       dataFormat: glue.DataFormat.JSON,
-    });
+    })
 
     const processor = new lambda.Function(this, `${project}${service}Processor${stage}`, {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -116,6 +116,6 @@ export class EtlStack extends Stack {
 
     processor.addEventSource(new S3EventSource(eventBucket, {
       events: [s3.EventType.OBJECT_CREATED]
-    }));
+    }))
   }
 }
