@@ -1,3 +1,3 @@
 # IoTeX Stack
 
-🪐 Validator node, contracts, and ETL infrastructure for support, export and realtime analysis of the IoTeX network
+🪐 Node infrastructure, contracts, and ETL pipeline for support and realtime analysis of the IoTeX network
